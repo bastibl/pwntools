@@ -328,6 +328,20 @@ def forward_word(*_):
         buffer_right = buffer_right[1:]
     redisplay()
 
+def kill_word_forward(*_):
+    global buffer_left, buffer_right
+    commit_search()
+    flag = False
+    while buffer_right:
+        c = buffer_right[0]
+        if c[0] in delims:
+            if flag:
+                break
+        else:
+            flag = True
+        buffer_right = buffer_right[1:]
+    redisplay()
+
 def go_beginning(*_):
     commit_search()
     set_buffer('', buffer_left + buffer_right)
@@ -340,20 +354,27 @@ keymap = km.Keymap({
     '<nomatch>'   : self_insert,
     '<up>'        : history_prev,
     '<down>'      : history_next,
+    'C-p'         : history_prev,
+    'C-n'         : history_next,
     '<left>'      : backward_char,
     '<right>'     : forward_char,
+    'C-b'         : backward_char,
+    'C-f'         : forward_char,
     '<del>'       : delete_char_backward,
     '<delete>'    : delete_char_forward,
     '<enter>'     : submit,
     'C-j'         : submit,
     'C-<left>'    : backward_word,
     'C-<right>'   : forward_word,
+    'M-b'         : backward_word,
+    'M-f'         : forward_word,
     'M-<left>'    : backward_word,
     'M-<right>'   : forward_word,
     'C-c'         : control_c,
-    'C-d'         : control_d,
+    'C-d'         : delete_char_forward,
     'C-k'         : kill_to_end,
     'C-w'         : kill_word_backward,
+    'M-d'         : kill_word_forward,
     '<backspace>' : kill_word_backward,
     'M-<del>'     : kill_word_backward,
     'C-r'         : search_history,
